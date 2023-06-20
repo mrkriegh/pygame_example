@@ -8,6 +8,7 @@ pygame = "2.4"
 PyTMX = "3.31"
 
 [dev-packages]
+pytest = "*"
 
 [requires]
 python_version = "3.7"
