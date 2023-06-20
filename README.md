@@ -3,7 +3,9 @@ Created by QuantumKnight135
 Created Date: 20/06/2023
 Updated Date: -
 
-This project is a personalized version of a wonderfully done tutorial video by @ClearCode that I found on Youtube [ClearCode's Channel] (https://youtube.com/@ClearCode/videos) . The base tutorial that I followed was his "Zelda in Python" tutorial, then I expanded my project based on his other tutorials. The point of this project is for my own personal education, and no money has been nor will be made by me in the sharing of this project.
+This project is a personalized version of a wonderfully done tutorial video by @ClearCode that I found on Youtube 
+[ClearCode's Channel] (https://youtube.com/@ClearCode/videos)
+. The base tutorial that I followed was his "Zelda in Python" tutorial, then I expanded my project based on his other tutorials. The point of this project is for my own personal education, and no money has been nor will be made by me in the sharing of this project.
 
 The entire point of sharing this project is to get user and programmer feedback. I am an experienced software engineer, but I am new to python, pygame, and game development in general, so I know that there is going to be a lot that I do not know. If there is anything you like or dislike here, feel free to either let me know or to leave me forever wondering.
 
