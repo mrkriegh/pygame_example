@@ -83,7 +83,7 @@ class InGameMenu:
         #provide the necessary information to create the audio submenu
     
     def create_story_pane(self):
-        text = "This is placeholder text"
+        text = "Welcome to the arena. You have been chosen to see\n just how far you can make it through wave after wave of\n opponents. You have been allowed to keep your weapons and\n your spells. Good Luck, and fight until you cannot fight\n anymore."
         self.story_pane = MessagePane(text, self.toggle_sub_menu)
 
     def toggle_sub_menu(self, type):
@@ -178,12 +178,13 @@ class MessagePane:
     def __init__(self, text, toggle_sub_menu):
         self.display_surface = pygame.display.get_surface()
         self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
-        self.text = text
+        self.text = text.split("\n")
+        print(self.text)
         self.active = False
         self.toggle_sub_menu = toggle_sub_menu
         
         (w,h) = self.display_surface.get_size()
-        w *= 0.6
+        w *= 0.8
         h *= 0.8
         l = w * 0.1
         t = h * 0.1
@@ -217,6 +218,7 @@ class MessagePane:
         self.selection_cooldown()
         pygame.draw.rect(self.display_surface,UI_BG_COLOR,self.rect)
         pygame.draw.rect(self.display_surface,UI_BORDER_COLOR,self.rect,3)
-        text_surf = self.font.render(self.text,False,TEXT_COLOR)
-        text_rect = text_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,30))
-        self.display_surface.blit(text_surf,text_rect)
+        for index,line in enumerate(self.text):
+            text_surf = self.font.render(line,False,TEXT_COLOR)
+            text_rect = text_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,30 + (index * 30)))
+            self.display_surface.blit(text_surf,text_rect)
