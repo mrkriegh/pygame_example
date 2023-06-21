@@ -13,10 +13,12 @@ from magic import MagicPlayer
 from upgrade import Upgrade
 
 class Level:
-    def __init__(self):
+    def __init__(self, toggle_in_game):
         #get the display surface
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
+        self.game_play_lock = False
+        self.toggle_in_game = toggle_in_game
 
         #sprite group setup
         #### THIS MEANS Drawing Layers! Change this to be the 3D layers:
@@ -39,6 +41,9 @@ class Level:
         #user interface
         self.ui = UI()
         self.upgrade = Upgrade(self.player)
+        self.selection_index = 0
+        self.selection_time = 0
+        self.can_toggle = True
         
         #particles
         self.animation_player = AnimationPlayer()
@@ -120,11 +125,24 @@ class Level:
         
     def add_exp(self, amount):
         self.player.exp += amount
+    
+    def toggle_menu_cooldown(self):
+        if self.can_toggle: return
+        current_time = pygame.time.get_ticks()
+        if current_time - self.selection_time >= 300: self.can_toggle = True
         
     def toggle_menu(self):
+        #debug(f"Escape Pressed. Can Toggle = {self.can_toggle}")
+        if not self.can_toggle: return
         self.game_paused = not self.game_paused
+        self.can_toggle = False
+        self.selection_time = pygame.time.get_ticks()
 
     def run(self):
+        if not self.game_play_lock:
+            self.game_play_lock = True
+            self.toggle_in_game()
+        
         #self.visible_sprites.draw()
         self.map_sprites.custom_draw(self.player)
         #self.sprite_group.draw(self.display_surface)
@@ -132,6 +150,9 @@ class Level:
         self.visible_sprites.custom_draw(self.player)
         self.ui.display(self.player)
         
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]: self.toggle_menu()
+        self.toggle_menu_cooldown()
         
         if self.game_paused:
             self.upgrade.display()
@@ -144,6 +165,7 @@ class Level:
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
             self.player_attack_logic()
+            
             
         
 
