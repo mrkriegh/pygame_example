@@ -14,29 +14,7 @@ class Game:
         self.in_game = False
         
         self.level = Level(self.toggle_in_game)
-        main_menu_items = {
-            'new_game': {
-                'text': "New Game",
-                'function': self.level.run,
-                'args': None
-            },
-            'audio': {
-                'text': "Audio",
-                'function': print,
-                'args': "Audio Menu"
-            },
-            'story': {
-                'text': "Story",
-                'function': print,
-                'args': "Story Pane"
-            },
-            'quit': {
-                'text': "Quit",
-                'function': pygame.event.post,
-                'args': pygame.event.Event(pygame.QUIT)
-            }
-        }
-        self.main_menu = InGameMenu(main_menu_items)#, self.in_game)
+        self.main_menu = InGameMenu(self.level.run)
         
         self.main_sound = pygame.mixer.Sound('../audio/main.ogg')
         self.main_sound.set_volume(min(VOLUME['master'],VOLUME['music']))
