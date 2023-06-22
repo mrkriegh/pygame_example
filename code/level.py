@@ -18,6 +18,7 @@ class Level:
         self.display_surface = pygame.display.get_surface()
         self.game_paused = False
         self.game_play_lock = False
+        self.player_dead = False
         self.toggle_in_game = toggle_in_game
 
         #sprite group setup
@@ -75,6 +76,7 @@ class Level:
                         self.create_attack,
                         self.destroy_attack,
                         self.create_magic,
+                        self.kill_player
                         )
                 else:
                     monster_name = obj.name.split("_")[1].lower()
@@ -120,6 +122,18 @@ class Level:
             self.player.hit_time = pygame.time.get_ticks()
             self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visible_sprites])
     
+    def kill_player(self, pos):
+        self.trigger_death_particles(pos,"spirit")
+        self.player_dead = True
+        self.player_death_time = pygame.time.get_ticks()
+        
+    def player_death_cooldown(self):
+        if not self.player_dead: return
+        current_time = pygame.time.get_ticks()
+        if current_time - self.player_death_time >= 600:
+            self.toggle_in_game()
+            self.game_play_lock = False
+    
     def trigger_death_particles(self, pos, particle_type):
         self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
         
@@ -153,6 +167,7 @@ class Level:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]: self.toggle_menu()
         self.toggle_menu_cooldown()
+        self.player_death_cooldown()
         
         if self.game_paused:
             self.upgrade.display()
