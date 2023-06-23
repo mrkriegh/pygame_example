@@ -3,6 +3,7 @@ from settings import *
 from debug import debug
 from support import import_folder
 from entity import Entity
+from audio import AudioController
 
 class Player(Entity):
     def __init__(self, pos, groups,obstacle_sprites,create_attack,destroy_attack,create_magic,kill_player):
@@ -49,10 +50,11 @@ class Player(Entity):
         self.exp = 1500
         self.speed = self.stats['speed']
         
+        self.audio_controller = AudioController()
         self.weapon_attack_sound = pygame.mixer.Sound('../audio/sword.wav')
-        self.weapon_attack_sound.set_volume(min(VOLUME['master'],VOLUME['player_attacks']))
+        self.weapon_attack_sound.set_volume(self.audio_controller.get_total_volume('player_attacks'))
         self.death_sound = pygame.mixer.Sound('../audio/death.wav')
-        self.death_sound.set_volume(min(VOLUME['master'],VOLUME['monster']))
+        self.death_sound.set_volume(self.audio_controller.get_total_volume('monster'))
         
         self.kill_player = kill_player
 
@@ -196,7 +198,7 @@ class Player(Entity):
         self.cooldowns()
         self.get_status()
         self.animate()
-        self.weapon_attack_sound.set_volume(min(VOLUME['master'],VOLUME['player_attacks']))
+        self.weapon_attack_sound.set_volume(self.audio_controller.get_total_volume('player_attacks'))
         self.move(self.stats['speed'])
         #debug(self.status)
         self.energy_recovery()

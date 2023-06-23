@@ -9,13 +9,6 @@ HITBOX_OFFSET = {
     'grass': -5,
     'invisible': 0}
 
-VOLUME = {
-    'master': 1,
-    'music': 0.5,
-    'player_attacks': 0.2,
-    'player_spells': 1,
-    'monster': 0.6}
-
 #ui
 BAR_HEIGHT = 20
 HEALTH_BAR_WIDTH = 200

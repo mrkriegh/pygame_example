@@ -2,6 +2,7 @@ import pygame
 from settings import *
 from entity import Entity
 from support import *
+from audio import AudioController
 
 class Enemy(Entity):
     def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player, trigger_death_particles, add_xp):
@@ -27,12 +28,14 @@ class Enemy(Entity):
         self.attack_radius = monster_info['attack_radius']
         self.notice_radius = monster_info['notice_radius']
         self.attack_type = monster_info['attack_type']
+        
+        self.audio_controller = AudioController()
         self.attack_sound = pygame.mixer.Sound(monster_info['attack_sound'])
-        self.attack_sound.set_volume(min(VOLUME['master'],VOLUME['monster']))
+        self.attack_sound.set_volume(self.audio_controller.get_total_volume('monster'))
         self.death_sound = pygame.mixer.Sound('../audio/death.wav')
-        self.death_sound.set_volume(min(VOLUME['master'],VOLUME['monster']))
+        self.death_sound.set_volume(self.audio_controller.get_total_volume('monster'))
         self.hit_sound = pygame.mixer.Sound('../audio/hit.wav')
-        self.hit_sound.set_volume(min(VOLUME['master'],VOLUME['monster']))
+        self.hit_sound.set_volume(self.audio_controller.get_total_volume('monster'))
         
         #player interaction
         self.player_location = []
@@ -135,9 +138,9 @@ class Enemy(Entity):
     def update(self):
         self.cooldowns()
         self.animate()
-        self.attack_sound.set_volume(min(VOLUME['master'],VOLUME['monster']))
-        self.death_sound.set_volume(min(VOLUME['master'],VOLUME['monster']))
-        self.hit_sound.set_volume(min(VOLUME['master'],VOLUME['monster']))
+        self.attack_sound.set_volume(self.audio_controller.get_total_volume('monster'))
+        self.death_sound.set_volume(self.audio_controller.get_total_volume('monster'))
+        self.hit_sound.set_volume(self.audio_controller.get_total_volume('monster'))
         self.move(self.speed)
 
     def enemy_update(self, player):
