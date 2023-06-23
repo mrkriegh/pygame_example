@@ -1,6 +1,7 @@
 import pygame
 from settings import *
 from debug import *
+from audio import AudioController
 
 class InGameMenu:
     def __init__(self, level_run_function):
@@ -52,9 +53,7 @@ class InGameMenu:
             self.selection_index = (self.selection_index + 1) % len(self.menu_items)
             self.can_move = False
             self.selection_time = pygame.time.get_ticks()
-        if keys[pygame.K_SPACE]:# or keys[pygame.K_ENTER]:
-            # print(f"[Selection Index]:{self.selection_index}")
-            print(f"[Selected Item]:{self.menu_items[self.menu_item_names[self.selection_index]]}")
+        if keys[pygame.K_SPACE]:
             self.can_move = False
             self.selection_time = pygame.time.get_ticks()
             self.item_list[self.selection_index].trigger(
@@ -140,21 +139,13 @@ class AudioMenu:
         self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
         self.active = False
         self.toggle_sub_menu = toggle_sub_menu
+        self.audio_controller = AudioController()
         
-        self.audio_number = len(VOLUME)
-        self.audio_names = list(VOLUME.keys())
+        self.audio_number = len(self.audio_controller.get_volume_dict())
+        self.audio_names = list(self.audio_controller.get_volume_dict().keys())
         (self.width,self.height) = self.display_surface.get_size()
         self.width = self.width // (self.audio_number + 1)
         self.height *= 0.8
-        #l = self.width * 0.1
-        #t = self.height * 0.1
-        #self.rect = pygame.Rect(l,t,self.width,self.height)
-        # VOLUME = {
-            # 'master': 1,
-            # 'music': 0.5,
-            # 'player_attacks': 0.2,
-            # 'player_spells': 1,
-            # 'monster': 0.6}
         self.create_items()
         
         self.selection_index = 0
@@ -166,9 +157,13 @@ class AudioMenu:
         keys = pygame.key.get_pressed()
         
         if keys[pygame.K_UP]:
-            pass#decrease selected options audio level to minimum 0
+            selected_item = self.item_list[self.selection_index].trigger(self.audio_names[self.selection_index],'up')
+            self.can_move = False
+            self.selection_time = pygame.time.get_ticks()
         if keys[pygame.K_DOWN]:
-            pass#increase selected options audio level to maximum 1
+            self.item_list[self.selection_index].trigger(self.audio_names[self.selection_index],'down')
+            self.can_move = False
+            self.selection_time = pygame.time.get_ticks()
         if keys[pygame.K_LEFT]:
             self.selection_index = (self.selection_index - 1) % self.audio_number
             self.can_move = False
@@ -185,7 +180,7 @@ class AudioMenu:
     def selection_cooldown(self):
         if self.can_move: return
         current_time = pygame.time.get_ticks()
-        if current_time - self.selection_time >= 100: self.can_move = True
+        if current_time - self.selection_time >= 200: self.can_move = True
     
     def toggle(self):
         self.active = not self.active
@@ -202,8 +197,6 @@ class AudioMenu:
             top = top * 0.1
             item = AudioMenuItem(left,top,self.width,self.height,index,self.font)
             self.item_list.append(item)
-        
-        print(f"[Audio Menu Items]:{self.item_list}")
     
     def display(self):
         if not self.active: return
@@ -211,7 +204,7 @@ class AudioMenu:
         self.selection_cooldown()
         for index,item in enumerate(self.item_list):
             name = self.audio_names[index]
-            value = list(VOLUME.values())[index]
+            value = list(self.audio_controller.get_volume_dict().values())[index]
             item.display(self.display_surface,self.selection_index,name,value)
 
 class AudioMenuItem:
@@ -219,13 +212,14 @@ class AudioMenuItem:
         self.rect = pygame.Rect(l,t,w,h)
         self.index = index
         self.font = font
+        self.audio_controller = AudioController()
     
     def display_names(self,surface,name,value,text_color):
         #title
         title_surf = self.font.render(name,False,text_color)
         title_rect = title_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,20))
         #value
-        value_surf = self.font.render(f'Value: {int(value)}',False,text_color)
+        value_surf = self.font.render(f'Value: {int(value * 100)}',False,text_color)
         value_rect = value_surf.get_rect(midbottom = self.rect.midbottom + pygame.math.Vector2(0,-20))
         #draw
         surface.blit(title_surf,title_rect)
@@ -244,9 +238,11 @@ class AudioMenuItem:
         pygame.draw.line(surface,color,top,bottom,5)
         pygame.draw.rect(surface,color,value_rect)
     
-    def trigger(self):
-        pass
-        #on right/left keypress, move vertical position bar and adjust volume settings value by 0.1(+-)
+    def trigger(self,key,direction):
+        if direction == "up": value = 0.1
+        elif direction == "down": value = -0.1
+        else: value = 0
+        self.audio_controller.adjust_volume(key, value)
     
     def display(self,surface,selection_num,name,value):
         selected = True if self.index == selection_num else False

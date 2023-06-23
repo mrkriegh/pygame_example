@@ -3,6 +3,7 @@ from settings import *
 from debug import debug
 from level import Level
 from menu import InGameMenu
+from audio import AudioController
 
 class Game:
     def __init__(self):
@@ -16,8 +17,9 @@ class Game:
         self.level = Level(self.toggle_in_game)
         self.main_menu = InGameMenu(self.level.run)
         
+        self.audio_controller = AudioController()
         self.main_sound = pygame.mixer.Sound('../audio/main.ogg')
-        self.main_sound.set_volume(min(VOLUME['master'],VOLUME['music']))
+        self.main_sound.set_volume(self.audio_controller.get_total_volume('music'))
         self.main_sound.play(loops = -1)
     
     def toggle_in_game(self):
@@ -32,7 +34,7 @@ class Game:
                     sys.exit()
 
             self.screen.fill(WATER_COLOR)
-            self.main_sound.set_volume(min(VOLUME['master'],VOLUME['music']))
+            self.main_sound.set_volume(self.audio_controller.get_total_volume('music'))
             
             #debug(f"[In Game]:{self.in_game}")
             if not self.in_game: self.main_menu.display()

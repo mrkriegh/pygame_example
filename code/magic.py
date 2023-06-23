@@ -2,16 +2,18 @@ import pygame
 from settings import *
 from debug import *
 from random import randint
+from audio import AudioController
 
 class MagicPlayer:
     def __init__(self,animation_player):
         self.animation_player = animation_player
+        self.audio_controller = AudioController()
         self.sounds = {
             'heal' : pygame.mixer.Sound('../audio/heal.wav'),
             'flame' : pygame.mixer.Sound('../audio/Fire.wav')
         }
-        self.sounds['flame'].set_volume(min(VOLUME['master'],VOLUME['player_attacks']))
-        self.sounds['heal'].set_volume(min(VOLUME['master'],VOLUME['player_spells']))
+        self.sounds['flame'].set_volume(self.audio_controller.get_total_volume('player_attacks'))
+        self.sounds['heal'].set_volume(self.audio_controller.get_total_volume('player_spells'))
     
     def heal(self, player, strength, cost, groups):
         if player.energy < cost: return
