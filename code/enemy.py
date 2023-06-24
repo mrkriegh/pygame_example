@@ -5,7 +5,7 @@ from support import *
 from audio import AudioController
 
 class Enemy(Entity):
-    def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player, trigger_death_particles, add_exp):
+    def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player, trigger_death_particles, add_exp,current_wave = 1):
         super().__init__(groups)
         self.sprite_type = 'enemy'
         
@@ -21,10 +21,10 @@ class Enemy(Entity):
         self.monster_name = monster_name
         monster_info = monster_data[self.monster_name]
         self.health = monster_info['health']
-        self.exp = monster_info['exp']
-        self.speed = monster_info['speed']
-        self.attack_damage = monster_info['damage']
-        self.resistance = monster_info['resistance']
+        self.exp = monster_info['exp'] + int(10 * current_wave)
+        self.speed = monster_info['speed'] + int(.5 * current_wave)
+        self.attack_damage = monster_info['damage'] + int(2 * current_wave)
+        self.resistance = monster_info['resistance'] + int(.5 * current_wave)
         self.attack_radius = monster_info['attack_radius']
         self.notice_radius = monster_info['notice_radius']
         self.attack_type = monster_info['attack_type']
