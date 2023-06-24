@@ -5,7 +5,7 @@ from support import *
 from audio import AudioController
 
 class Enemy(Entity):
-    def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player, trigger_death_particles, add_xp):
+    def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player, trigger_death_particles, add_exp):
         super().__init__(groups)
         self.sprite_type = 'enemy'
         
@@ -47,7 +47,7 @@ class Enemy(Entity):
         self.hit_cooldown = 300
         self.damage_player = damage_player
         self.trigger_death_particles = trigger_death_particles
-        self.add_xp = add_xp
+        self.add_exp = add_exp
     
     def import_graphics(self,name):
         self.animations = {'idle':[],'move':[],'attack':[]}
@@ -78,7 +78,7 @@ class Enemy(Entity):
         if self.health <= 0:
             self.trigger_death_particles(self.rect.center, self.monster_name)
             self.death_sound.play()
-            self.add_xp(self.exp)
+            self.add_exp(self.exp)
             self.kill()
     
     def actions(self):
