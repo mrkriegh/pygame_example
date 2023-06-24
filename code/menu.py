@@ -2,15 +2,16 @@ import pygame
 from settings import *
 from debug import *
 from audio import AudioController
+from score import ScoreController
 
 class InGameMenu:
-    def __init__(self, level_run_function):
+    def __init__(self, initialize_level):
         self.display_surface = pygame.display.get_surface()
         self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
         self.menu_items = {
             'new_game': {
                 'text': "New Game",
-                'function': level_run_function,
+                'function': initialize_level,
                 'args': None
             },
             'audio': {
@@ -35,6 +36,7 @@ class InGameMenu:
         self.create_menu(self.menu_items)
         self.create_story_pane()
         self.create_audio_menu()
+        self.score = ScoreController()
         
         self.selection_index = 0
         self.selection_time = 0
@@ -95,16 +97,15 @@ class InGameMenu:
 
     def display(self):
         if self.display_sub_menu:
-            debug("Showing Sub Menu")
             self.story_pane.display()
             self.audio_menu.display()
         else: 
-            debug("Showing Main Menu")
             self.input()
             self.selection_cooldown()
             for index,item in enumerate(self.item_list):
                 name = self.menu_items[self.menu_item_names[index]]['text']
                 item.display(self.display_surface,self.selection_index,name)
+            debug(f"High Score: {self.score.get_top_kill_count()}")
 
 class VertMenuItem:
     def __init__(self,l,t,w,h,index,font):

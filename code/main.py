@@ -15,7 +15,7 @@ class Game:
         self.in_game = False
         
         self.level = Level(self.toggle_in_game)
-        self.main_menu = InGameMenu(self.level.run)
+        self.main_menu = InGameMenu(self.level.initialize_level)
         
         self.audio_controller = AudioController()
         self.main_sound = pygame.mixer.Sound('../audio/main.ogg')
@@ -36,7 +36,6 @@ class Game:
             self.screen.fill(WATER_COLOR)
             self.main_sound.set_volume(self.audio_controller.get_total_volume('music'))
             
-            #debug(f"[In Game]:{self.in_game}")
             if not self.in_game: self.main_menu.display()
             else: self.level.run()
             
