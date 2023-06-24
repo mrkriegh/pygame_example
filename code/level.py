@@ -49,6 +49,10 @@ class Level:
         self.game_play_lock = True
         self.player_dead = False
         self.enemy_count = 0
+        self.current_wave = 1
+        self.wave_cap = 3
+        self.wave_spawn_time = 0
+        self.spawning_wave = False
         self.create_map()
         self.upgrade = Upgrade(self.player)
 
@@ -99,7 +103,7 @@ class Level:
                         self.trigger_death_particles,
                         self.add_exp))
                     self.enemy_count += 1
-                    
+
     def create_attack(self):
         self.current_attack = Weapon(self.player, [self.visible_sprites,self.attack_sprites])
    
@@ -153,6 +157,37 @@ class Level:
         if not self.player_dead: self.player.kill()
         for enemy in self.enemy_list:
             enemy.kill()
+
+    def spawn_wave(self):
+        objlayer = self.tmx_data.get_layer_by_name("Entity_Spawners")
+        for obj in objlayer:
+            if obj.name.split("_")[0] == "Spawn" and obj.name != "Spawn_Player":
+                monster_name = obj.name.split("_")[1].lower()
+                self.enemy_list.append(Enemy(
+                    monster_name,
+                    (obj.x, obj.y),
+                    [self.visible_sprites,self.attackable_sprites],
+                    self.obstacle_sprites,
+                    self.damage_player,
+                    self.trigger_death_particles,
+                    self.add_exp))
+                self.enemy_count += 1
+        self.current_wave += 1
+        self.spawning_wave = False
+    
+    def spawn_countdown(self):
+        current_time = pygame.time.get_ticks()
+        self.display_incoming_wave(current_time)
+        #self.debug_message += f"[CT]:{current_time},[WST]:{self.wave_spawn_time}\n[Diff]:{current_time - self.wave_spawn_time}"
+        if current_time - self.wave_spawn_time >= 2400:
+            self.spawn_wave()
+            
+    def display_incoming_wave(self, current_time):
+        text = f"Another Wave Incoming In: {int((current_time - self.wave_spawn_time))}"
+        font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
+        text_surf = font.render(text,False,"yellow")
+        text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,200))
+        self.display_surface.blit(text_surf,text_rect)
     
     def trigger_death_particles(self, pos, particle_type):
         self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
@@ -200,11 +235,12 @@ class Level:
         self.toggle_menu_cooldown()
         self.end_level_cooldown()
         
+        self.debug_message = f"Current Score: {self.score.get_kill_count()}"
+        #self.debug_message += f"\n[EC]:{self.enemy_count},[GO]:{self.game_over}\n[CW]:{self.current_wave},[WC]:{self.wave_cap}"
+        
         if self.game_paused:
             self.upgrade.display()
             #display upgrade menu
-        elif self.enemy_count == 0 and not self.game_over:
-            self.end_level()
         else:
             #run the game
             self.map_sprites.update()
@@ -213,7 +249,18 @@ class Level:
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
             self.player_attack_logic()
-            debug(f"High Score: {self.score.get_kill_count()}")
+            if self.enemy_count == 0 and not self.game_over:
+                #self.debug_message += "\nNo Enemies, but not Game Over"
+                if self.current_wave < self.wave_cap:
+                    #self.debug_message += "\nNot at Wave Cap, Prepare for another wave!"
+                    if not self.spawning_wave:
+                        self.wave_spawn_time = pygame.time.get_ticks()
+                        self.spawning_wave = True
+                    self.spawn_countdown()
+                else:
+                    #self.debug_message += "\nEnding Level"
+                    self.end_level()
+        debug(self.debug_message)
             
             
         
