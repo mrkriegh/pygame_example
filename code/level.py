@@ -159,6 +159,7 @@ class Level:
             enemy.kill()
 
     def spawn_wave(self):
+        self.current_wave += 1
         objlayer = self.tmx_data.get_layer_by_name("Entity_Spawners")
         for obj in objlayer:
             if obj.name.split("_")[0] == "Spawn" and obj.name != "Spawn_Player":
@@ -170,9 +171,9 @@ class Level:
                     self.obstacle_sprites,
                     self.damage_player,
                     self.trigger_death_particles,
-                    self.add_exp))
+                    self.add_exp,
+                    self.current_wave))
                 self.enemy_count += 1
-        self.current_wave += 1
         self.spawning_wave = False
     
     def spawn_countdown(self):
