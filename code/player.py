@@ -160,13 +160,11 @@ class Player(Entity):
     def get_weapon_cooldown(self):
         return weapon_data[self.weapon]['cooldown']
 
-
     def get_stat_value_by_index(self, index):
         return list(self.stats.values())[index]
         
     def get_stat_cost_by_index(self, index):
         return list(self.upgrade_cost.values())[index]
-
 
     def animate(self):
         animation = self.animations[self.status]
@@ -200,5 +198,4 @@ class Player(Entity):
         self.animate()
         self.weapon_attack_sound.set_volume(self.audio_controller.get_total_volume('player_attacks'))
         self.move(self.stats['speed'])
-        #debug(self.status)
         self.energy_recovery()
