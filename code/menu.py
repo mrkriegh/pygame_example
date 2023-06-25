@@ -11,8 +11,8 @@ class InGameMenu:
         self.menu_items = {
             'new_game': {
                 'text': "New Game",
-                'function': initialize_level,
-                'args': 'tutorial'
+                'function': self.toggle_sub_menu,
+                'args': 'new_game'
             },
             'audio': {
                 'text': "Audio",
@@ -36,6 +36,7 @@ class InGameMenu:
         self.create_menu(self.menu_items)
         self.create_story_pane()
         self.create_audio_menu()
+        self.create_new_game_menu(initialize_level)
         self.score = ScoreController()
         
         self.selection_index = 0
@@ -80,6 +81,9 @@ class InGameMenu:
             item = VertMenuItem(left,top,self.width,self.height,index,self.font)
             self.item_list.append(item)
             
+    def create_new_game_menu(self, initialize_level):
+        self.new_game_menu = NewGameMenu(initialize_level, self.toggle_sub_menu)
+        
     def create_audio_menu(self):
         self.audio_menu = AudioMenu(self.toggle_sub_menu)
     
@@ -93,12 +97,14 @@ class InGameMenu:
         self.selection_time = pygame.time.get_ticks()
         if type == "story": self.story_pane.toggle()
         if type == "audio": self.audio_menu.toggle()
+        if type == "new_game": self.new_game_menu.toggle()
         #toggle displaying one of the submenus or the main menu
 
     def display(self):
         if self.display_sub_menu:
             self.story_pane.display()
             self.audio_menu.display()
+            self.new_game_menu.display()
         else: 
             self.input()
             self.selection_cooldown()
@@ -125,8 +131,6 @@ class VertMenuItem:
         surface.blit(title_surf,title_rect)
     
     def trigger(self, function, arguments):
-        # print(f"[Function]:{function}")
-        # print(f"[Arguments]:{arguments}")
         if arguments: function(arguments)
         else: function()
     
@@ -139,6 +143,117 @@ class VertMenuItem:
         pygame.draw.rect(surface,border_color,self.rect,3)
         self.display_names(surface,name,text_color)
         
+class NewGameMenu:
+    def __init__(self, initialize_level, toggle_sub_menu):
+        self.display_surface = pygame.display.get_surface()
+        self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
+        self.menu_items = {
+            'tutorial': {
+                'text': "Play The Tutorial",
+                'function': initialize_level,
+                'args': 'tutorial'
+            },
+            'arena': {
+                'text': "Skip To The Arena",
+                'function': initialize_level,
+                'args': "arena"
+            }
+        }
+        self.active = False
+        self.toggle_sub_menu = toggle_sub_menu
+        
+        self.ngm_number = 2
+        self.menu_item_names = list(self.menu_items.keys())
+        (self.width,self.height) = self.display_surface.get_size()
+        self.width *= 0.6
+        self.height = self.height // (self.ngm_number + 1)
+        self.create_items()
+        
+        self.selection_index = 0
+        self.selection_time = 0
+        self.can_move = True
+        
+    def input(self):
+        if not self.can_move: return
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_UP]:
+            self.selection_index = (self.selection_index - 1) % len(self.menu_items)
+            self.can_move = False
+            self.selection_time = pygame.time.get_ticks()
+        elif keys[pygame.K_DOWN]:
+            self.selection_index = (self.selection_index + 1) % len(self.menu_items)
+            self.can_move = False
+            self.selection_time = pygame.time.get_ticks()
+        if keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
+            self.can_move = False
+            self.selection_time = pygame.time.get_ticks()
+            self.item_list[self.selection_index].trigger(
+                self.menu_items[self.menu_item_names[self.selection_index]]['function'],
+                self.menu_items[self.menu_item_names[self.selection_index]]['args']
+            )
+        if keys[pygame.K_ESCAPE]:
+            self.can_move = False
+            self.selection_time = pygame.time.get_ticks()
+            self.toggle_sub_menu("new_game")
+    
+    def selection_cooldown(self):
+        if self.can_move: return
+        current_time = pygame.time.get_ticks()
+        if current_time - self.selection_time >= 100: self.can_move = True
+    
+    def toggle(self):
+        self.can_move = False
+        self.selection_time = pygame.time.get_ticks()
+        self.active = not self.active
+    
+    def create_items(self):
+        self.item_list = []
+        
+        for index,item in enumerate(self.menu_items):
+            full_height = self.display_surface.get_size()[1]
+            increment = full_height // len(self.menu_items)
+            top = (index * increment) + (increment - self.height) // 2
+            left = self.display_surface.get_size()[0] * 0.2
+            item = NewGameMenuItem(left,top,self.width,self.height,index,self.font)
+            self.item_list.append(item)
+    
+    def display(self):
+        if not self.active: return
+        self.input()
+        self.selection_cooldown()
+        for index,item in enumerate(self.item_list):
+            name = self.menu_items[self.menu_item_names[index]]['text']
+            item.display(self.display_surface,self.selection_index,name)
+        
+        text = "Arrow Keys To\nMove, SPACE or\nENTER to Select,\nESCAPE to Return\nto Main Menu"
+        for index,line in enumerate(text.split("\n")):
+            text_surf = self.font.render(line,False,"orange")
+            text_rect = text_surf.get_rect(topleft = self.display_surface.get_rect().topleft + pygame.math.Vector2(10,20+(index*20)))
+            self.display_surface.blit(text_surf, text_rect)
+
+class NewGameMenuItem:
+    def __init__(self,l,t,w,h,index,font):
+        self.rect = pygame.Rect(l,t,w,h)
+        self.index = index
+        self.font = font
+    
+    def display_names(self,surface,name,text_color):
+        title_surf = self.font.render(name,False,text_color)
+        title_rect = title_surf.get_rect(midtop = self.rect.midtop + pygame.math.Vector2(0,60))
+        surface.blit(title_surf,title_rect)
+    
+    def trigger(self, function, arguments):
+        if arguments: function(arguments)
+        else: function()
+    
+    def display(self,surface,selection_num,name):
+        selected = True if self.index == selection_num else False
+        bg_color = UPGRADE_BG_COLOR_SELECTED if selected else UI_BG_COLOR
+        border_color = UI_BORDER_COLOR_ACTIVE if selected else UI_BORDER_COLOR
+        text_color = TEXT_COLOR_SELECTED if selected else TEXT_COLOR
+        pygame.draw.rect(surface,bg_color,self.rect)
+        pygame.draw.rect(surface,border_color,self.rect,3)
+        self.display_names(surface,name,text_color)
 
 class AudioMenu:
     def __init__(self, toggle_sub_menu):
