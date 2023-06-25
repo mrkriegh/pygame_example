@@ -14,23 +14,13 @@ from upgrade import Upgrade
 from score import ScoreController
 
 class Level:
-    def __init__(self, toggle_in_game):
+    def __init__(self, toggle_in_game, get_in_game):
         #get the display surface
         self.display_surface = pygame.display.get_surface()
         
         self.score = ScoreController()
         self.toggle_in_game = toggle_in_game
-
-        #sprite group setup
-        #### THIS MEANS Drawing Layers! Change this to be the 3D layers:
-        ####   Hidden, Map, Player, Obstacle, Overhead, Skybox
-        self.tmx_data = load_pygame('../data/tmx/testmap.tmx')
-        self.visible_sprites = YSortCameraGroup()
-        self.obstacle_sprites = pygame.sprite.Group()
-        self.attack_sprites = pygame.sprite.Group()
-        self.attackable_sprites = pygame.sprite.Group()
-        self.map_sprites = MapLayerCameraGroup(self.tmx_data.get_layer_by_name('Base Map'))
-        self.structure_sprites = MapLayerCameraGroup(self.tmx_data.get_layer_by_name('Structures'))
+        self.get_in_game = get_in_game
 #        self.spawner_sprites = MapLayerCameraGroup(self.tmx_data.get_layer_by_name('Entities'))
         self.spawners = {}
         self.enemy_list = []
@@ -40,20 +30,24 @@ class Level:
         self.animation_player = AnimationPlayer()
         self.magic_player = MagicPlayer(self.animation_player)
     
-    def initialize_level(self):
+    def initialize_level(self, level_selection):
         #game flags and stats
+        self.tutorial_level = False
         self.current_attack = None
         self.can_toggle = True
         self.game_paused = False
         self.game_over = False
+        self.end_game = False
         self.game_play_lock = True
         self.player_dead = False
         self.enemy_count = 0
         self.current_wave = 1
-        self.wave_cap = 3
+        self.wave_cap = 1 if level_selection == "tutorial" else None
         self.wave_spawn_time = 0
         self.spawning_wave = False
-        self.create_map()
+        
+        
+        self.create_map(level_selection)
         self.upgrade = Upgrade(self.player)
 
         #user interface
@@ -62,18 +56,34 @@ class Level:
         self.selection_time = 0
         self.end_level_time = 0
         
-        self.toggle_in_game()
+        if not self.get_in_game():
+            self.toggle_in_game()
 
-    def create_map(self):
+    def create_map(self, level_selection):
+        if level_selection == "tutorial":
+            self.tmx_data = load_pygame('../data/tmx/testmap.tmx')
+            self.tutorial_level = True
+        else: self.tmx_data = load_pygame('../data/tmx/arena_map.tmx')
+        
+        #sprite group setup
+        #### THIS MEANS Drawing Layers! Change this to be the 3D layers:
+        ####   Hidden, Map, Player, Obstacle, Overhead, Skybox
+        self.visible_sprites = YSortCameraGroup()
+        self.obstacle_sprites = pygame.sprite.Group()
+        self.attack_sprites = pygame.sprite.Group()
+        self.attackable_sprites = pygame.sprite.Group()
+        self.map_sprites = MapLayerCameraGroup(self.tmx_data.get_layer_by_name('Base Map'))
+        self.structure_sprites = MapLayerCameraGroup(self.tmx_data.get_layer_by_name('Structures'))
+        self.high_structure_sprites = MapLayerCameraGroup(self.tmx_data.get_layer_by_name('High_Structures'))
+        
         for layer in self.tmx_data.layers:
             if hasattr(layer,'data'):
                 if layer.name == 'Base Map' or layer.name == 'Structures':
                     groups = self.map_sprites
                 elif layer.name == 'Obstacles':
                     groups = self.obstacle_sprites
- #               elif layer.name == 'Entities':
- #                   self.spawn_entities(layer)
- #                   continue
+                elif layer.name == 'High_Structures':
+                    groups = self.high_structure_sprites
                 else:
                     groups = self.visible_sprites
                 for x,y,surf in layer.tiles():
@@ -140,18 +150,22 @@ class Level:
         self.trigger_death_particles(pos,"spirit")
         self.player_dead = True
         self.game_over = True
-        self.end_level()
+        self.end_level(True)
         
     def end_level_cooldown(self):
         if not self.game_over: return
         current_time = pygame.time.get_ticks()
         self.display_game_over()
         if current_time - self.end_level_time >= 2400:
-            self.game_play_lock = False
-            self.toggle_in_game()
+            if self.end_game:
+                self.game_play_lock = False
+                self.toggle_in_game()
+            else:
+                self.initialize_level('arena')
             
-    def end_level(self):
+    def end_level(self, end_game):
         self.end_level_time = pygame.time.get_ticks()
+        self.end_game = end_game
         self.game_over = True
         self.score.update_top_kill_count()
         if not self.player_dead: self.player.kill()
@@ -179,7 +193,6 @@ class Level:
     def spawn_countdown(self):
         current_time = pygame.time.get_ticks()
         self.display_incoming_wave(current_time)
-        #self.debug_message += f"[CT]:{current_time},[WST]:{self.wave_spawn_time}\n[Diff]:{current_time - self.wave_spawn_time}"
         if current_time - self.wave_spawn_time >= 2400:
             self.spawn_wave()
             
@@ -189,6 +202,12 @@ class Level:
         text_surf = font.render(text,False,"yellow")
         text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,200))
         self.display_surface.blit(text_surf,text_rect)
+            
+    def tutorial_page_countdown(self):
+        pass
+    
+    def display_tutorial_page(self):
+        pass
     
     def trigger_death_particles(self, pos, particle_type):
         self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
@@ -229,6 +248,7 @@ class Level:
         #self.sprite_group.draw(self.display_surface)
         self.structure_sprites.custom_draw(self.player)
         self.visible_sprites.custom_draw(self.player)
+        self.high_structure_sprites.custom_draw(self.player)
         self.ui.display(self.player)
         
         keys = pygame.key.get_pressed()
@@ -237,7 +257,6 @@ class Level:
         self.end_level_cooldown()
         
         self.debug_message = f"Current Score: {self.score.get_kill_count()}"
-        #self.debug_message += f"\n[EC]:{self.enemy_count},[GO]:{self.game_over}\n[CW]:{self.current_wave},[WC]:{self.wave_cap}"
         
         if self.game_paused:
             self.upgrade.display()
@@ -251,16 +270,13 @@ class Level:
             self.visible_sprites.enemy_update(self.player)
             self.player_attack_logic()
             if self.enemy_count == 0 and not self.game_over:
-                #self.debug_message += "\nNo Enemies, but not Game Over"
-                if self.current_wave < self.wave_cap:
-                    #self.debug_message += "\nNot at Wave Cap, Prepare for another wave!"
+                if self.wave_cap is None or self.current_wave < self.wave_cap:
                     if not self.spawning_wave:
                         self.wave_spawn_time = pygame.time.get_ticks()
                         self.spawning_wave = True
                     self.spawn_countdown()
                 else:
-                    #self.debug_message += "\nEnding Level"
-                    self.end_level()
+                    self.end_level(False)
         debug(self.debug_message)
             
             
