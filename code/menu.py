@@ -55,7 +55,7 @@ class InGameMenu:
             self.selection_index = (self.selection_index + 1) % len(self.menu_items)
             self.can_move = False
             self.selection_time = pygame.time.get_ticks()
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
             self.can_move = False
             self.selection_time = pygame.time.get_ticks()
             self.item_list[self.selection_index].trigger(
@@ -84,7 +84,7 @@ class InGameMenu:
         self.audio_menu = AudioMenu(self.toggle_sub_menu)
     
     def create_story_pane(self):
-        text = "Welcome to the arena. You have been chosen to see\n just how far you can make it through wave after wave of\n opponents. You have been allowed to keep your weapons and\n your spells. Good Luck, and fight until you cannot fight\n anymore."
+        text = "Welcome to the arena. You have been chosen to see\n just how far you can make it through wave after wave of\n opponents. You have been allowed to keep your weapons and\n your spells. Good Luck, and fight until you cannot fight\n anymore.\n\n\n\n\n\nPRESS ESCAPE to return to the Main Menu"
         self.story_pane = MessagePane(text, self.toggle_sub_menu)
 
     def toggle_sub_menu(self, type):
@@ -105,6 +105,12 @@ class InGameMenu:
             for index,item in enumerate(self.item_list):
                 name = self.menu_items[self.menu_item_names[index]]['text']
                 item.display(self.display_surface,self.selection_index,name)
+        
+            text = "Arrow Keys To\nMove, SPACE or\nENTER to Select"
+            for index,line in enumerate(text.split("\n")):
+                text_surf = self.font.render(line,False,"orange")
+                text_rect = text_surf.get_rect(topleft = self.display_surface.get_rect().topleft + pygame.math.Vector2(10,20+(index*20)))
+                self.display_surface.blit(text_surf, text_rect)
             debug(f"High Score: {self.score.get_top_kill_count()}")
 
 class VertMenuItem:
@@ -207,6 +213,12 @@ class AudioMenu:
             name = self.audio_names[index]
             value = list(self.audio_controller.get_volume_dict().values())[index]
             item.display(self.display_surface,self.selection_index,name,value)
+        
+        text = "Arrow Keys To Move and Raise/Lower Volume, ESCAPE to return to previous menu"
+        for index,line in enumerate(text.split("\n")):
+            text_surf = self.font.render(line,False,"orange")
+            text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,30+(index*20)))
+            self.display_surface.blit(text_surf, text_rect)
 
 class AudioMenuItem:
     def __init__(self,l,t,w,h,index,font):
