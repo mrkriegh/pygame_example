@@ -261,7 +261,7 @@ class Level:
         self.ui.display(self.player)
         
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_TAB]: self.toggle_menu()
+        if keys[pygame.K_TAB] or keys[pygame.K_ESCAPE]: self.toggle_menu()
         self.toggle_menu_cooldown()
         self.end_level_cooldown()
         
