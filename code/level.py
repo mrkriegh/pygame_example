@@ -47,7 +47,7 @@ class Level:
         self.spawning_wave = False
         self.tutorial_page = 0
         self.tutorial_page_time = 0
-        self.tutorial_book = ["If you want to improve your abilities,\nhit TAB.","Welcome to my tower, Mortal.\nThink of this as a practice room.","There are four enemies in this room.\nDefeat them all to continue on to the Arena.","Press SPACE to Attack\nPress Q to Switch Weapons\nPress LEFT CONTROL to Cast Magic\nPress E to Switch Spells"]
+        self.tutorial_book = ["Your experience is shown in the bottom right.\nWhen you are upgrading your abilities, you must pay in experience.\nThe cost to upgrade a skill is shown below the skill in the upgrade menu.","Welcome to my tower, Mortal.\nThink of this as a practice room.","There are four enemies in this room.\nDefeat them all to continue on to the Arena.","Press SPACE to Attack\nPress Q to Switch Weapons\nPress LEFT CONTROL to Cast Magic\nPress E to Switch Spells","Weapons:\nSword - Average Reach, Damage, and Speed\nSpear - Long Reach, High Damage, Slow\nAxe - Average Reach, Medium High Damage, Medium Slow\nRapier - Average Reach, Medium Low Damage, Medium Fast\nSai - Short Reach, Low Damage, Fast","Spells:\nFlames - Create a line of flames to damage enemies\nHeal - Increases your health","If you want to improve your abilities,\nhit TAB."]
         self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
         
         
@@ -214,10 +214,17 @@ class Level:
             self.tutorial_page_time = pygame.time.get_ticks()
     
     def display_tutorial_page(self):
+        vert_offset = 0
         for index,line in enumerate(self.tutorial_book[self.tutorial_page].split("\n")):
+            vert_offset += 1
             text_surf = self.font.render(line,False,"orange")
             text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,30+(index*20)))
             self.display_surface.blit(text_surf, text_rect)
+        
+        page_num = f" ({((self.tutorial_page - 1) % len(self.tutorial_book)) + 1}/{len(self.tutorial_book)})"
+        text_surf = self.font.render(page_num,False,"orange")
+        text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,30+(vert_offset*20)))
+        self.display_surface.blit(text_surf, text_rect)
     
     def trigger_death_particles(self, pos, particle_type):
         self.animation_player.create_particles(particle_type,pos,self.visible_sprites)

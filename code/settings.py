@@ -38,8 +38,8 @@ weapon_data = {
     'sword': {'cooldown': 500, 'damage': 15, 'graphic': '../graphics/weapons/sword/full.png'},
     'lance': {'cooldown': 800, 'damage': 30, 'graphic': '../graphics/weapons/lance/full.png'},
     'axe': {'cooldown': 700, 'damage': 20, 'graphic': '../graphics/weapons/axe/full.png'},
-    'rapier': {'cooldown': 450, 'damage': 8, 'graphic': '../graphics/weapons/rapier/full.png'},
-    'sai': {'cooldown': 480, 'damage': 10, 'graphic': '../graphics/weapons/sai/full.png'}}
+    'rapier': {'cooldown': 450, 'damage': 12, 'graphic': '../graphics/weapons/rapier/full.png'},
+    'sai': {'cooldown': 380, 'damage': 8, 'graphic': '../graphics/weapons/sai/full.png'}}
 
 magic_data = {
     'flame': {'strength': 5,'cost': 20,'graphic': '../graphics/particles/flame/fire.png'},
