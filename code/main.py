@@ -14,7 +14,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.in_game = False
         
-        self.level = Level(self.toggle_in_game)
+        self.level = Level(self.toggle_in_game, self.get_in_game)
         self.main_menu = InGameMenu(self.level.initialize_level)
         
         self.audio_controller = AudioController()
@@ -24,6 +24,9 @@ class Game:
     
     def toggle_in_game(self):
         self.in_game = not self.in_game
+        
+    def get_in_game(self):
+        return self.in_game
 
     def run(self):
         while True:

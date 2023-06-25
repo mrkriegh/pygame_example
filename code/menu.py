@@ -12,7 +12,7 @@ class InGameMenu:
             'new_game': {
                 'text': "New Game",
                 'function': initialize_level,
-                'args': None
+                'args': 'tutorial'
             },
             'audio': {
                 'text': "Audio",
