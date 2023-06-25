@@ -45,6 +45,10 @@ class Level:
         self.wave_cap = 1 if level_selection == "tutorial" else None
         self.wave_spawn_time = 0
         self.spawning_wave = False
+        self.tutorial_page = 0
+        self.tutorial_page_time = 0
+        self.tutorial_book = ["If you want to improve your abilities,\nhit TAB.","Welcome to my tower, Mortal.\nThink of this as a practice room.","There are four enemies in this room.\nDefeat them all to continue on to the Arena.","Press SPACE to Attack\nPress Q to Switch Weapons\nPress LEFT CONTROL to Cast Magic\nPress E to Switch Spells"]
+        self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
         
         
         self.create_map(level_selection)
@@ -198,16 +202,22 @@ class Level:
             
     def display_incoming_wave(self, current_time):
         text = f"Another Wave Incoming In: {int((current_time - self.wave_spawn_time))}"
-        font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
-        text_surf = font.render(text,False,"yellow")
+        text_surf = self.font.render(text,False,"yellow")
         text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,200))
         self.display_surface.blit(text_surf,text_rect)
             
     def tutorial_page_countdown(self):
-        pass
+        current_time = pygame.time.get_ticks()
+        self.display_tutorial_page()
+        if current_time - self.tutorial_page_time >= 3600:
+            self.tutorial_page = (self.tutorial_page + 1) % len(self.tutorial_book)
+            self.tutorial_page_time = pygame.time.get_ticks()
     
     def display_tutorial_page(self):
-        pass
+        for index,line in enumerate(self.tutorial_book[self.tutorial_page].split("\n")):
+            text_surf = self.font.render(line,False,"orange")
+            text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,30+(index*20)))
+            self.display_surface.blit(text_surf, text_rect)
     
     def trigger_death_particles(self, pos, particle_type):
         self.animation_player.create_particles(particle_type,pos,self.visible_sprites)
@@ -231,10 +241,9 @@ class Level:
     def display_game_over(self):
         text = "Game Over!\n"
         if self.player_dead: text += "You were defeated."
-        else: text += "CONGRATULATIONS!"
-        font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
+        else: text = "CONGRATULATIONS!"
         for index,line in enumerate(text.split("\n")):
-            text_surf = font.render(line,False,"yellow")
+            text_surf = self.font.render(line,False,"yellow")
             text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,200+(index*20)))
             self.display_surface.blit(text_surf,text_rect)
 
@@ -269,6 +278,7 @@ class Level:
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
             self.player_attack_logic()
+            if self.tutorial_level: self.tutorial_page_countdown()
             if self.enemy_count == 0 and not self.game_over:
                 if self.wave_cap is None or self.current_wave < self.wave_cap:
                     if not self.spawning_wave:

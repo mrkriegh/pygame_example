@@ -35,7 +35,7 @@ class Upgrade:
             if self.selection_index < 0: self.selection_index = self.attribute_number - 1
             self.can_move = False
             self.selection_time = pygame.time.get_ticks()
-        if keys[pygame.K_SPACE]:
+        if keys[pygame.K_SPACE] or keys[pygame.K_RETURN]:
             self.can_move = False
             self.selection_time = pygame.time.get_ticks()
             self.item_list[self.selection_index].trigger(self.player)
@@ -74,6 +74,12 @@ class Upgrade:
             max_value = self.max_values[index]
             cost = self.player.get_stat_cost_by_index(index)
             item.display(self.display_surface,self.selection_index,name,value,max_value,cost)
+        
+        text = "Arrow Keys To Move, SPACE or ENTER to Select, TAB to return to the game"
+        for index,line in enumerate(text.split("\n")):
+            text_surf = self.font.render(line,False,"orange")
+            text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,30+(index*20)))
+            self.display_surface.blit(text_surf, text_rect)
 
 class Item:
     def __init__(self,l,t,w,h,index,font):
