@@ -1,0 +1,92 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "tmx/arena_map.tmx",
+    "expandedProjectPaths": [
+        "tmx",
+        "tsx",
+        ".",
+        "export"
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "export/testmap.tmx": {
+            "scale": 0.46609375,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 641.5018437814282,
+                "y": 641.5018437814282
+            }
+        },
+        "tmx/arena_map.tmx": {
+            "expandedObjectLayers": [
+                4
+            ],
+            "scale": 0.125,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 1428,
+                "y": 3940
+            }
+        },
+        "tmx/testmap.tmx": {
+            "scale": 0.46609375,
+            "selectedLayer": 5,
+            "viewCenter": {
+                "x": 498.8266845457593,
+                "y": 629.7016426416359
+            }
+        },
+        "tsx/TilesetFloor.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tsx/TilesetFloor64.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "tsx/TilesetFloorDetail64.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tsx/TilesetNature64.tsx": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "tsx/TilesetWater64.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tsx/tileset.tsx": {
+            "scaleInDock": 1
+        }
+    },
+    "last.imagePath": "C:/Users/Mr Kriegh/projects/Python_Examples/Zelda_In_Python/dist/data/tsx",
+    "map.height": 80,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "map.width": 80,
+    "openFiles": [
+        "tmx/arena_map.tmx",
+        "tmx/testmap.tmx"
+    ],
+    "project": "tutorial_expanded.tiled-project",
+    "recentFiles": [
+        "tmx/testmap.tmx",
+        "tmx/arena_map.tmx",
+        "tsx/TilesetWater64.tsx",
+        "tsx/TilesetNature64.tsx",
+        "tsx/TilesetFloorDetail64.tsx",
+        "tsx/TilesetFloor64.tsx",
+        "export/testmap.tmx",
+        "tsx/TilesetFloor.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    }
+}

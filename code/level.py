@@ -1,17 +1,17 @@
 import pygame
-from settings import *
-from debug import *
+from code.settings import *
+from code.debug import *
 from pytmx.util_pygame import load_pygame
 from random import choice, randint
-from tile import *
-from player import Player
-from enemy import Enemy
-from weapon import Weapon
-from ui import UI
-from particles import AnimationPlayer
-from magic import MagicPlayer
-from upgrade import Upgrade
-from score import ScoreController
+from code.tile import *
+from code.player import Player
+from code.enemy import Enemy
+from code.weapon import Weapon
+from code.ui import UI
+from code.particles import AnimationPlayer
+from code.magic import MagicPlayer
+from code.upgrade import Upgrade
+from code.score import ScoreController
 
 class Level:
     def __init__(self, toggle_in_game, get_in_game):
@@ -47,7 +47,7 @@ class Level:
         self.spawning_wave = False
         self.tutorial_page = 0
         self.tutorial_page_time = 0
-        self.tutorial_book = ["If you want to improve your abilities,\nhit TAB.","Welcome to my tower, Mortal.\nThink of this as a practice room.","There are four enemies in this room.\nDefeat them all to continue on to the Arena.","Press SPACE to Attack\nPress Q to Switch Weapons\nPress LEFT CONTROL to Cast Magic\nPress E to Switch Spells"]
+        self.tutorial_book = ["Your experience is shown in the bottom right.\nWhen you are upgrading your abilities, you must pay in experience.\nThe cost to upgrade a skill is shown below the skill in the upgrade menu.","Welcome to my tower, Mortal.\nThink of this as a practice room.","There are four enemies in this room.\nDefeat them all to continue on to the Arena.","Press SPACE to Attack\nPress Q to Switch Weapons\nPress LEFT CONTROL to Cast Magic\nPress E to Switch Spells","Weapons:\nSword - Average Reach, Damage, and Speed\nSpear - Long Reach, High Damage, Slow\nAxe - Average Reach, Medium High Damage, Medium Slow\nRapier - Average Reach, Medium Low Damage, Medium Fast\nSai - Short Reach, Low Damage, Fast","Spells:\nFlames - Create a line of flames to damage enemies\nHeal - Increases your health","If you want to improve your abilities,\nhit TAB."]
         self.font = pygame.font.Font(UI_FONT, UI_FONT_SIZE)
         
         
@@ -65,9 +65,9 @@ class Level:
 
     def create_map(self, level_selection):
         if level_selection == "tutorial":
-            self.tmx_data = load_pygame('../data/tmx/testmap.tmx')
+            self.tmx_data = load_pygame('data\\tmx\\testmap.tmx')
             self.tutorial_level = True
-        else: self.tmx_data = load_pygame('../data/tmx/arena_map.tmx')
+        else: self.tmx_data = load_pygame('data\\tmx\\arena_map.tmx')
         
         #sprite group setup
         #### THIS MEANS Drawing Layers! Change this to be the 3D layers:
@@ -214,10 +214,17 @@ class Level:
             self.tutorial_page_time = pygame.time.get_ticks()
     
     def display_tutorial_page(self):
+        vert_offset = 0
         for index,line in enumerate(self.tutorial_book[self.tutorial_page].split("\n")):
+            vert_offset += 1
             text_surf = self.font.render(line,False,"orange")
             text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,30+(index*20)))
             self.display_surface.blit(text_surf, text_rect)
+        
+        page_num = f" ({((self.tutorial_page - 1) % len(self.tutorial_book)) + 1}/{len(self.tutorial_book)})"
+        text_surf = self.font.render(page_num,False,"orange")
+        text_rect = text_surf.get_rect(midtop = self.display_surface.get_rect().midtop + pygame.math.Vector2(0,30+(vert_offset*20)))
+        self.display_surface.blit(text_surf, text_rect)
     
     def trigger_death_particles(self, pos, particle_type):
         self.animation_player.create_particles(particle_type,pos,self.visible_sprites)

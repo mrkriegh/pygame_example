@@ -1,14 +1,14 @@
 import pygame
-from settings import *
-from debug import debug
-from support import import_folder
-from entity import Entity
-from audio import AudioController
+from code.settings import *
+from code.debug import debug
+from code.support import import_folder
+from code.entity import Entity
+from code.audio import AudioController
 
 class Player(Entity):
     def __init__(self, pos, groups,obstacle_sprites,create_attack,destroy_attack,create_magic,kill_player):
         super().__init__(groups)
-        self.image = pygame.image.load('../graphics/test/player.png').convert_alpha()
+        self.image = pygame.image.load('graphics\\test\\player.png').convert_alpha()
         self.rect = self.image.get_rect(topleft = pos)
         self.hitbox = self.rect.inflate(-10,HITBOX_OFFSET['player'])
         #graphics setup
@@ -51,15 +51,15 @@ class Player(Entity):
         self.speed = self.stats['speed']
         
         self.audio_controller = AudioController()
-        self.weapon_attack_sound = pygame.mixer.Sound('../audio/sword.wav')
+        self.weapon_attack_sound = pygame.mixer.Sound('audio\\sword.wav')
         self.weapon_attack_sound.set_volume(self.audio_controller.get_total_volume('player_attacks'))
-        self.death_sound = pygame.mixer.Sound('../audio/death.wav')
+        self.death_sound = pygame.mixer.Sound('audio\\death.wav')
         self.death_sound.set_volume(self.audio_controller.get_total_volume('monster'))
         
         self.kill_player = kill_player
 
     def import_player_assets(self):
-        character_path = "../graphics/player/"
+        character_path = "graphics\\player\\"
         self.animations = {'up': [],'down': [],'left': [],'right': [],
             'right_idle': [],'left_idle': [],'up_idle': [],'down_idle':[],
             'right_attack':[],'left_attack':[],'up_attack':[],'down_attack':[]}
