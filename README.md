@@ -2,7 +2,14 @@
 
 Created by QuantumKnight135
 Created Date: 20/06/2023
-Updated Date: -
+Updated Date: 26/06/2023
+
+# Installation
+
+To install this game, simply download ArenaChallenge_WINDOWS_1.0_setup.exe in the `main` branch, and run through the installation wizard. You will then me able to run the executable ArenaChallenge.exe.
+
+
+# Back Story
 
 This project is a personalized version of a wonderfully done tutorial video by @ClearCode that I found on Youtube 
 [ClearCode's Channel] (https://youtube.com/@ClearCode/videos)
