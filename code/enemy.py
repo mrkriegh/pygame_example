@@ -1,8 +1,8 @@
 import pygame
-from settings import *
-from entity import Entity
-from support import *
-from audio import AudioController
+from code.settings import *
+from code.entity import Entity
+from code.support import *
+from code.audio import AudioController
 
 class Enemy(Entity):
     def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player, trigger_death_particles, add_exp,current_wave = 0):
@@ -32,9 +32,9 @@ class Enemy(Entity):
         self.audio_controller = AudioController()
         self.attack_sound = pygame.mixer.Sound(monster_info['attack_sound'])
         self.attack_sound.set_volume(self.audio_controller.get_total_volume('monster'))
-        self.death_sound = pygame.mixer.Sound('../audio/death.wav')
+        self.death_sound = pygame.mixer.Sound('audio\\death.wav')
         self.death_sound.set_volume(self.audio_controller.get_total_volume('monster'))
-        self.hit_sound = pygame.mixer.Sound('../audio/hit.wav')
+        self.hit_sound = pygame.mixer.Sound('audio\\hit.wav')
         self.hit_sound.set_volume(self.audio_controller.get_total_volume('monster'))
         
         #player interaction
@@ -51,7 +51,7 @@ class Enemy(Entity):
     
     def import_graphics(self,name):
         self.animations = {'idle':[],'move':[],'attack':[]}
-        main_path = f'../graphics/monsters/{name}/'
+        main_path = f'graphics\\monsters\\{name}\\'
         for animation in self.animations.keys():
             self.animations[animation] = import_folder(main_path + animation)
     

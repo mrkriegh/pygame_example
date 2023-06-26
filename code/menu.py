@@ -1,8 +1,8 @@
 import pygame
-from settings import *
-from debug import *
-from audio import AudioController
-from score import ScoreController
+from code.settings import *
+from code.debug import *
+from code.audio import AudioController
+from code.score import ScoreController
 
 class InGameMenu:
     def __init__(self, initialize_level):

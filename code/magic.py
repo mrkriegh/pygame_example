@@ -1,16 +1,16 @@
 import pygame
-from settings import *
-from debug import *
+from code.settings import *
+from code.debug import *
 from random import randint
-from audio import AudioController
+from code.audio import AudioController
 
 class MagicPlayer:
     def __init__(self,animation_player):
         self.animation_player = animation_player
         self.audio_controller = AudioController()
         self.sounds = {
-            'heal' : pygame.mixer.Sound('../audio/heal.wav'),
-            'flame' : pygame.mixer.Sound('../audio/Fire.wav')
+            'heal' : pygame.mixer.Sound('audio\\heal.wav'),
+            'flame' : pygame.mixer.Sound('audio\\Fire.wav')
         }
         self.sounds['flame'].set_volume(self.audio_controller.get_total_volume('player_attacks'))
         self.sounds['heal'].set_volume(self.audio_controller.get_total_volume('player_spells'))
@@ -32,7 +32,7 @@ class MagicPlayer:
         
         face = player.status.split("_")[0]
         #placement
-        if face == 'right': direction = pygame.math.Vector2(1,0)
+        if face == 'right': direction = pygame.math.Vector2s(1,0)
         elif face == 'left': direction = pygame.math.Vector2(-1,0)
         elif face == 'up': direction = pygame.math.Vector2(0,-1)
         else: direction = pygame.math.Vector2(0,1)

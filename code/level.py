@@ -1,17 +1,17 @@
 import pygame
-from settings import *
-from debug import *
+from code.settings import *
+from code.debug import *
 from pytmx.util_pygame import load_pygame
 from random import choice, randint
-from tile import *
-from player import Player
-from enemy import Enemy
-from weapon import Weapon
-from ui import UI
-from particles import AnimationPlayer
-from magic import MagicPlayer
-from upgrade import Upgrade
-from score import ScoreController
+from code.tile import *
+from code.player import Player
+from code.enemy import Enemy
+from code.weapon import Weapon
+from code.ui import UI
+from code.particles import AnimationPlayer
+from code.magic import MagicPlayer
+from code.upgrade import Upgrade
+from code.score import ScoreController
 
 class Level:
     def __init__(self, toggle_in_game, get_in_game):
@@ -65,9 +65,9 @@ class Level:
 
     def create_map(self, level_selection):
         if level_selection == "tutorial":
-            self.tmx_data = load_pygame('../data/tmx/testmap.tmx')
+            self.tmx_data = load_pygame('data\\tmx\\testmap.tmx')
             self.tutorial_level = True
-        else: self.tmx_data = load_pygame('../data/tmx/arena_map.tmx')
+        else: self.tmx_data = load_pygame('data\\tmx\\arena_map.tmx')
         
         #sprite group setup
         #### THIS MEANS Drawing Layers! Change this to be the 3D layers:

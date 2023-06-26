@@ -1,5 +1,5 @@
 import pygame
-from debug import debug
+from code.debug import debug
 from math import sin
 
 class Entity(pygame.sprite.Sprite):
